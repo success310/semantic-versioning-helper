@@ -88,7 +88,6 @@ module.exports = {
     {
       path: "/src/App.tsx",
       regex: "This project has the version [version][build].",
-      replace: "This project has the version [version][build].",
     }
   ]
 };
@@ -111,7 +110,8 @@ Adittionaly to the selected template include predefined files:
 Predefined files:
 
 - `package.json` will replace version in `/package.json`
-- `service-worker` will replace in `/public/service-worker.js` the cache version (`/v[0-9]{1,2}.[0-9]{1,2}.[0-9]{1,2}/g`)
+- `service-worker` will replace in `/public/service-worker.js` the cache
+  version (`/v[0-9]{1,2}.[0-9]{1,2}.[0-9]{1,2}/g`)
 - `readme` will look for occurrences of the current version name (determined by package.json) and replace them
 - `android` replace version name in `/android/app/build.gradle` and increase build number by 1
 - `ios` replace MARKETING_VERSION in `/ios/[YOUR_PROJECT].xcodeproj/project.pbxproj` and increase
@@ -139,6 +139,7 @@ regex: "This project has the version [version][build].",
 - `path`: obvious
 - `regex`: Regular expression where [version] = current version, each match will be replaced with [version] containing
   the new Version. [build] will be increased by 1.
+- `regex<2,3,4,5>`: You can give up to 5 different Regular expressions for each file
 
 ## Why use semantic-versioning-helper
 
@@ -150,9 +151,16 @@ time the App Store kindly informs you that an App with this version has already 
 
 Nope. If the script fails it undoes all changes it made!
 
-## Donation?
+## Contribute
 
+I'm open to suggestions to improve this, open an issue or mail to [ivan@waldboth.com](mailto:ivan@waldboth.com).
 
+Especially suggestions for file templates.
+
+## Donate
+
+<a href="https://paypal.me/knolperlap/"><img src="paypal.svg" height="40"></a>  
+If you enjoyed this project — or just feeling generous, consider buying me a beer. Cheers! :beers:
 
 ## License
 

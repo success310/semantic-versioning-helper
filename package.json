@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Helps manage the version of your project across multiple files.",
   "main": "dist/index.js",
+  "types": "src/types.d.ts",
   "repository": "github:csaq5507/semantic-versioning-helper",
   "scripts": {
     "prepublishOnly": "yarn run clean && yarn run build",
@@ -11,7 +12,9 @@
     "format": "prettier --no-semi --write --trailing-comma=all src{/**,}/*.ts"
   },
   "dependencies": {
-    "minimist": "^1.2.8"
+    "chalk": "^5.2.0",
+    "minimist": "^1.2.8",
+    "slash": "^5.1.0"
   },
   "devDependencies": {
     "@types/minimist": "^1.2.2",
@@ -34,9 +37,13 @@
   "author": "Ivan Waldboth",
   "license": "MIT",
   "files": [
-    "index.js",
+    "src/types.d.ts",
     "dist/**/*.js",
     "README.md"
   ],
+  "bugs": {
+    "url": "https://github.com/csaq5507/semantic-versioning-helper/issues"
+  },
+  "homepage": "https://github.com/csaq5507/semantic-versioning-helper#readme",
   "packageManager": "yarn@3.5.1"
 }

@@ -1,47 +1,34 @@
 /* eslint-disable no-console */
 // eslint-disable-next-line @typescript-eslint/no-var-requires
+import { checkArgs } from "./argparse";
+import chalk from "chalk";
+import { determineVersion } from "./fileReader";
+import { currentPath } from "./constants";
+
 const fs = require("fs");
 
-const currentPath = process.cwd();
-console.log(`Project Path: ${currentPath}`);
-const versionRegex = "[0-9]{1,2}.[0-9]{1,2}.[0-9]{1,2}";
-const buildRegex = "[0-9]{1,2}.[0-9]{1,2}.[0-9]{1,2}";
-const files = [
-  {
-    identifier: "package.json",
-    path: "/package.json",
-    regex: '"version": "[verison]"',
-  },
-  {
-    identifier: "service-worker",
-    path: "/public/service-worker.js",
-    regex: /v[version]/g,
-  },
-];
-
-function checkArgs(args) {
-  if (args.length < 3) return false;
-  if (args.length > 4) return false;
-  if (
-    args[2] !== "n" &&
-    args[2] !== "c" &&
-    args[2] !== "-new" &&
-    args[2] !== "--current"
-  )
-    return false;
-  if ((args[2] === "n" || args[2] === "--new") && args.length < 4) return false;
-  if (args[2] === "n" || args[2] === "--new") return 1;
-  return 2;
-}
-
-function printManual() {
-  console.log(process.argv);
-  console.log("Command: node versionIncr.js <options>");
-  console.log("Options:");
-  console.log("\tn [--new] x.x.x\tincrease version of your project");
-  console.log("\tc [--current]\tget current version of package.json");
-  console.log("\th [--help]\tprint this Manual");
-  process.exit(0);
+const argv = checkArgs();
+if (argv) {
+  console.log(`Project Path: ${currentPath}`);
+  determineConfig().then((defaultConfig) => {
+    let config = defaultConfig;
+    determineVersion().then(([version, build]) => {
+      if (argv.template) config = configFromTemplate(argv.template);
+      if (argv.current) {
+        console.log(
+          `Current project version: ${chalk.bold(version)} ${chalk.bold(build)}`
+        );
+      } else {
+        let newVersion = false;
+        if (argv.new) newVersion = incrVersion(version, "CUSTOM", argv.new);
+        else if (argv.major) newVersion = incrVersion(version, "MAJOR");
+        else if (argv.minor) newVersion = incrVersion(version, "MINOR");
+        else if (argv.patch) newVersion = incrVersion(version, "PATCH");
+        if (newVersion) replaceFiles(config, version, newVersion, build);
+        else error("At least one versioning arguments is required");
+      }
+    });
+  });
 }
 
 function incr(newVersion) {
@@ -109,41 +96,4 @@ function incr(newVersion) {
       });
     } else error("No package.json found!");
   });
-}
-
-const undoQueue = [];
-
-function error(msg) {
-  console.error(msg);
-  console.log(`Undo ${undoQueue.length} steps!`);
-  undoQueue.forEach((action) => {
-    fs.writeFile(action.file, action.content).then();
-  });
-  setTimeout(() => {
-    process.exit(1);
-  }, 1000);
-}
-
-function get() {
-  fs.readFile("./package.json", "utf8", (err1, content) => {
-    if (!err1) {
-      const match = content.match(packageJsonVersionRegex);
-      console.log(match);
-      process.exit(0);
-    } else {
-      error("No package.json found!");
-    }
-  });
-}
-
-const arg = checkArgs(process.argv);
-switch (arg) {
-  case 1:
-    incr(process.argv[3]);
-    break;
-  case 2:
-    get();
-    break;
-  default:
-    printManual();
 }
